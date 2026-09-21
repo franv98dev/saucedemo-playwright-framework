@@ -137,6 +137,11 @@ test.describe('performance_glitch_user', () => {
       const start = Date.now();
       await loginPage.login(USERS.performanceGlitch);
       await inventoryPage.expectToBeOpen();
+      await expect(inventoryPage.items.first()).toBeVisible();
+      // The glitch blocks the page's main thread, and the URL can change before it starts.
+      // Round-tripping into the page only completes once the page is responsive again,
+      // so the measured time reflects what the user actually waits for.
+      await inventoryPage.page.evaluate(() => document.readyState);
       const elapsed = Date.now() - start;
 
       test.info().annotations.push({ type: 'login-time', description: `${elapsed} ms` });
