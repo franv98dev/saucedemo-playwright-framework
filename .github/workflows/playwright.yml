@@ -52,10 +52,12 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Install browser
+      # The `setup` project (login + storageState) always runs on Chromium,
+      # so every job needs Chromium in addition to the browser under test.
+      - name: Install browsers
         run: |
           BROWSER=${{ matrix.project == 'mobile-chrome' && 'chromium' || matrix.project }}
-          npx playwright install --with-deps "$BROWSER"
+          npx playwright install --with-deps chromium "$BROWSER"
 
       - name: Run tests
         run: >
